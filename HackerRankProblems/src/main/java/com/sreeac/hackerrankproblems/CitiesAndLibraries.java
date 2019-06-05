@@ -20,7 +20,7 @@ public class CitiesAndLibraries {
      * Complete the roadsAndLibraries function below.
      *
      * @param n number of cities
-     * @param c_lib cost of library
+     * @param c_lib cost of libraryExist
      * @param c_road cost of road
      * @param citiesWithRoads Each row has two columns which represents two
      * cities between which road is possible
@@ -44,18 +44,50 @@ public class CitiesAndLibraries {
             city2.getRoads().add(city1);
         }
 
-        if (citiesWithRoads.length * c_road > n * c_lib) {
-            return n * c_lib;
+        for (CityNode city : cities) {
+            traverseAndAddLibraries(city, 0, c_road, c_lib);
         }
 
-        return 0L;
+        long totalCost = 0L;
+        for (CityNode city : cities) {
+            totalCost = totalCost + ((city.getTraversalCost() != 0L) ? city.getTraversalCost() : c_lib);
+            System.out.println("City :" + city.getCityCardinal() + ", Total cost so far:" + totalCost);
+        }
+
+        return totalCost;
     }
 
-    static class CityNode {
+    private static void traverseAndAddLibraries(CityNode currentNode,
+                                                long traversalCost,
+                                                int roadCost,
+                                                int libraryCost) {
+        System.out.println("Reached " + currentNode);
+        if (traversalCost < libraryCost
+                && ((traversalCost != 0 && traversalCost < currentNode.getTraversalCost())
+                || (traversalCost == 0 && libraryCost < currentNode.getTraversalCost()))) {
+            currentNode.setHasLibrary(true);
+            currentNode.setTraversalCost(traversalCost);
+            traversalCost = 0;
+        }
+        if (libraryCost < traversalCost) {
+            return;
+        }
+
+        for (CityNode connectedCity : currentNode.getRoads()) {
+            if ((traversalCost + roadCost) < connectedCity.getTraversalCost()) {
+                traverseAndAddLibraries(connectedCity, traversalCost + roadCost, roadCost, libraryCost);
+            }
+        }
+        System.out.println("Leaving " + currentNode);
+    }
+
+    private static class CityNode {
 
         int cityCardinal;
 
-        boolean hasLibrary = false;
+        long traversalCost = Long.MAX_VALUE;
+
+        boolean libraryExist = false;
 
         List<CityNode> roads = new ArrayList<>();
 
@@ -80,20 +112,29 @@ public class CitiesAndLibraries {
             return cityCardinal;
         }
 
-        public void setCityCardinal(int cityCardinal) {
-            this.cityCardinal = cityCardinal;
+        public boolean hasLibrary() {
+            return libraryExist;
         }
 
-        public boolean isHasLibrary() {
-            return hasLibrary;
-        }
-
-        public void setHasLibrary(boolean hasLibrary) {
-            this.hasLibrary = hasLibrary;
+        public void setHasLibrary(boolean libraryExist) {
+            this.libraryExist = libraryExist;
         }
 
         public List<CityNode> getRoads() {
             return roads;
+        }
+
+        public long getTraversalCost() {
+            return traversalCost;
+        }
+
+        public void setTraversalCost(long traversalCost) {
+            this.traversalCost = traversalCost;
+        }
+
+        @Override
+        public String toString() {
+            return "CityNode{" + "cityCardinal=" + cityCardinal + ", traversalCost=" + traversalCost + ", libraryExist=" + libraryExist + '}';
         }
 
     }

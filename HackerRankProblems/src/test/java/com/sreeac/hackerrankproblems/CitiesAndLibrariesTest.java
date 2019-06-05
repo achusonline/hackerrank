@@ -7,7 +7,6 @@ package com.sreeac.hackerrankproblems;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -22,7 +21,6 @@ public class CitiesAndLibrariesTest {
     }
 
     @Test
-    @Ignore
     public void testRoadsAndLibraries_3Cities() {
         int[][] cities = new int[3][2];
         cities[0][0] = 1;
