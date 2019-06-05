@@ -81,8 +81,6 @@ public class CitiesAndLibraries {
 
         int cityCardinal;
 
-        long traversalCost = Long.MAX_VALUE;
-
         boolean libraryExist = false;
 
         List<CityNode> roads = new ArrayList<>();
@@ -107,17 +105,9 @@ public class CitiesAndLibraries {
             return roads;
         }
 
-        public long getTraversalCost() {
-            return traversalCost;
-        }
-
-        public void setTraversalCost(long traversalCost) {
-            this.traversalCost = traversalCost;
-        }
-
         @Override
         public String toString() {
-            return "CityNode{" + "cityCardinal=" + cityCardinal + ", traversalCost=" + traversalCost + ", libraryExist=" + libraryExist + '}';
+            return "CityNode{" + "cityCardinal=" + cityCardinal + ", libraryExist=" + libraryExist + '}';
         }
 
     }
