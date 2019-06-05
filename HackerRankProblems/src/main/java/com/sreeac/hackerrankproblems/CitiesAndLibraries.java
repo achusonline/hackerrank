@@ -7,7 +7,6 @@ package com.sreeac.hackerrankproblems;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * https://www.hackerrank.com/challenges/torque-and-development/problem
@@ -44,41 +43,38 @@ public class CitiesAndLibraries {
             city2.getRoads().add(city1);
         }
 
-        for (CityNode city : cities) {
-            traverseAndAddLibraries(city, 0, c_road, c_lib);
-        }
-
         long totalCost = 0L;
         for (CityNode city : cities) {
-            totalCost = totalCost + ((city.getTraversalCost() != 0L) ? city.getTraversalCost() : c_lib);
+            if (!city.hasLibrary()) {
+                int totalNodes = traverseAndAddLibraries(city, 0, c_road, c_lib, 1);
+                totalCost += c_lib;
+                if (c_lib > c_road) {
+                    totalCost += c_road * (totalNodes - 1);
+                } else {
+                    totalCost += c_lib * (totalNodes - 1);
+                }
+            }
+
             System.out.println("City :" + city.getCityCardinal() + ", Total cost so far:" + totalCost);
         }
 
         return totalCost;
     }
 
-    private static void traverseAndAddLibraries(CityNode currentNode,
-                                                long traversalCost,
-                                                int roadCost,
-                                                int libraryCost) {
+    private static int traverseAndAddLibraries(CityNode currentNode,
+                                               long traversalCost,
+                                               int roadCost,
+                                               int libraryCost, int totalCities) {
         System.out.println("Reached " + currentNode);
-        if (traversalCost < libraryCost
-                && ((traversalCost != 0 && traversalCost < currentNode.getTraversalCost())
-                || (traversalCost == 0 && libraryCost < currentNode.getTraversalCost()))) {
-            currentNode.setHasLibrary(true);
-            currentNode.setTraversalCost(traversalCost);
-            traversalCost = 0;
-        }
-        if (libraryCost < traversalCost) {
-            return;
-        }
+        currentNode.setHasLibrary(true);
 
         for (CityNode connectedCity : currentNode.getRoads()) {
-            if ((traversalCost + roadCost) < connectedCity.getTraversalCost()) {
-                traverseAndAddLibraries(connectedCity, traversalCost + roadCost, roadCost, libraryCost);
+            if (!connectedCity.hasLibrary()) {
+                totalCities = traverseAndAddLibraries(connectedCity, traversalCost + roadCost, roadCost, libraryCost, totalCities + 1);
             }
         }
         System.out.println("Leaving " + currentNode);
+        return totalCities;
     }
 
     private static class CityNode {
@@ -93,19 +89,6 @@ public class CitiesAndLibraries {
 
         CityNode(int cityCardinal) {
             this.cityCardinal = cityCardinal;
-        }
-
-        @Override
-        public boolean equals(Object another) {
-            if (another == null && this != null) {
-                return false;
-            }
-            if (!(another instanceof CityNode)) {
-                return false;
-            }
-
-            CityNode other = (CityNode) another;
-            return new EqualsBuilder().append(cityCardinal, other.cityCardinal).isEquals();
         }
 
         public int getCityCardinal() {
